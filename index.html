@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <title>我们的回忆 | Our Memories</title>
+    <meta name="description" content="Ferizka & HAOYUAN 的专属超能纪念馆 - 糖、香料以及一切美好的事物">
+    <meta property="og:title" content="我们的回忆 - Our Memories">
+    <meta property="og:description" content="记录我们见面的每一天">
+    <meta property="og:type" content="website">
+
+    <link href="https://fonts.googleapis.com/css2?family=ZCOOL+KuaiLe&family=Fredoka+One&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --blossom-pink: #FF92D0;
+            --bubbles-blue: #58CCFF;
+            --buttercup-green: #9FE73B;
+            --ppg-black: #2C2C2C;
+            --white: #ffffff;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Fredoka One', 'ZCOOL KuaiLe', cursive;
+            background-color: #FFF0F5;
+            color: var(--ppg-black);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* 顶部导航与语言 */
+        .header-nav {
+            width: 100%;
+            background: var(--white);
+            border-bottom: 5px solid var(--ppg-black);
+            padding: 15px 0;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .lang-switcher button {
+            background: var(--white);
+            border: 3px solid var(--ppg-black);
+            padding: 6px 12px;
+            cursor: pointer;
+            border-radius: 8px;
+            font-family: inherit;
+            margin: 0 5px;
+            transition: 0.2s;
+        }
+
+        .lang-switcher button.active {
+            background: var(--blossom-pink);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 0 var(--ppg-black);
+        }
+
+        /* 计时器区域 */
+        .hero-section {
+            text-align: center;
+            padding: 60px 20px;
+            width: 100%;
+        }
+
+        .timer-card {
+            background: var(--white);
+            border: 6px solid var(--ppg-black);
+            display: inline-block;
+            padding: 40px;
+            border-radius: 30px;
+            box-shadow: 15px 15px 0px var(--bubbles-blue);
+            position: relative;
+        }
+
+        /* 模拟飞天小女警飞过的装饰 */
+        .timer-card::after {
+            content: '✨';
+            position: absolute;
+            top: -20px;
+            right: -20px;
+            font-size: 2rem;
+        }
+
+        #days-number {
+            font-size: 6rem;
+            color: var(--blossom-pink);
+            text-shadow: 5px 5px 0 var(--ppg-black);
+            display: block;
+            margin: 10px 0;
+        }
+
+        /* 内容容器 */
+        .container {
+            width: 90%;
+            max-width: 800px;
+            margin: 30px auto;
+        }
+
+        /* 交互区 */
+        .upload-area {
+            background: var(--buttercup-green);
+            border: 5px solid var(--ppg-black);
+            border-radius: 20px;
+            padding: 25px;
+            margin-bottom: 50px;
+            box-shadow: 10px 10px 0 var(--ppg-black);
+        }
+
+        textarea {
+            width: 100%;
+            height: 100px;
+            border: 4px solid var(--ppg-black);
+            border-radius: 12px;
+            padding: 15px;
+            box-sizing: border-box;
+            font-family: inherit;
+            font-size: 1.1rem;
+            margin-bottom: 15px;
+        }
+
+        .input-group {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        input[type="file"] {
+            font-family: inherit;
+        }
+
+        .btn-send {
+            background: var(--blossom-pink);
+            color: white;
+            border: 4px solid var(--ppg-black);
+            padding: 12px 35px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 1.3rem;
+            font-family: inherit;
+            box-shadow: 0 5px 0 var(--ppg-black);
+        }
+
+        .btn-send:active {
+            transform: translateY(3px);
+            box-shadow: 0 2px 0 var(--ppg-black);
+        }
+
+        /* 照片墙流式布局 */
+        .memory-grid {
+            column-count: 2;
+            column-gap: 20px;
+        }
+
+        @media (max-width: 600px) {
+            .memory-grid { column-count: 1; }
+            #days-number { font-size: 4rem; }
+        }
+
+        .memory-card {
+            break-inside: avoid;
+            background: var(--white);
+            border: 4px solid var(--ppg-black);
+            border-radius: 15px;
+            padding: 15px;
+            margin-bottom: 20px;
+            transition: transform 0.3s;
+        }
+
+        .memory-card:hover {
+            transform: scale(1.02) rotate(1deg);
+        }
+
+        .memory-image {
+            width: 100%;
+            border-radius: 8px;
+            border: 3px solid var(--ppg-black);
+            margin-bottom: 12px;
+        }
+
+        .memory-time {
+            font-size: 0.85rem;
+            color: #777;
+            display: block;
+            margin-top: 10px;
+            border-top: 1px dashed #ccc;
+            padding-top: 5px;
+        }
+
+        .delete-btn {
+            float: right;
+            background: none;
+            border: none;
+            color: #ff4757;
+            cursor: pointer;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+<div class="header-nav">
+    <div style="font-size: 1.5rem;">🌸 <span data-i18n="navTitle">我们的回忆</span></div>
+    <div class="lang-switcher">
+        <button onclick="changeLang('zh')" id="btn-zh">中文</button>
+        <button onclick="changeLang('en')" id="btn-en">EN</button>
+        <button onclick="changeLang('id')" id="btn-id">ID</button>
+    </div>
+</div>
+
+<div class="hero-section">
+    <div class="timer-card">
+        <p data-i18n="timerPrefix" style="margin:0; font-size: 1.2rem;">Ferizka Hairunnisa & HAOYUAN 已见面</p>
+        <span id="days-number">0</span>
+        <p data-i18n="timerSuffix" style="margin:0; font-size: 1.2rem;">天了</p>
+    </div>
+</div>
+
+<div class="container">
+    <div class="upload-area">
+        <h3 data-i18n="uploadTitle">🌸 添加新的超能回忆</h3>
+        <textarea id="textInput" data-i18n-placeholder="placeholder"></textarea>
+        <div class="input-group">
+            <input type="file" id="imageInput" accept="image/*">
+            <button class="btn-send" onclick="handleUpload()" data-i18n="btnSend">发射记忆！</button>
+        </div>
+    </div>
+
+    <h2 style="text-align:center; font-size: 2rem; margin-bottom: 30px;">💎 <span data-i18n="wallTitle">回忆照片墙</span></h2>
+    <div class="memory-grid" id="memoryWall">
+        </div>
+</div>
+
+<script>
+    // --- 配置区 ---
+    const START_DATE = "2025-05-24";
+    const i18n = {
+        zh: {
+            navTitle: "我们的回忆",
+            timerPrefix: "Ferizka Hairunnisa & HAOYUAN 已见面",
+            timerSuffix: "天了",
+            uploadTitle: "添加新的超能回忆",
+            placeholder: "写下关于今天的甜蜜瞬间...",
+            btnSend: "发射记忆！",
+            wallTitle: "回忆照片墙",
+            confirmDel: "确定要删除这条记忆吗？"
+        },
+        en: {
+            navTitle: "Our Memories",
+            timerPrefix: "Ferizka & HAOYUAN have met for",
+            timerSuffix: "Days",
+            uploadTitle: "Add New Powerpuff Memory",
+            placeholder: "Write down the sweet moment...",
+            btnSend: "Send!",
+            wallTitle: "Memory Wall",
+            confirmDel: "Are you sure to delete this?"
+        },
+        id: {
+            navTitle: "Kenangan Kita",
+            timerPrefix: "Ferizka & HAOYUAN telah bertemu",
+            timerSuffix: "Hari",
+            uploadTitle: "Tambah Kenangan Super",
+            placeholder: "Tuliskan momen manis hari ini...",
+            btnSend: "Kirim!",
+            wallTitle: "Dinding Kenangan",
+            confirmDel: "Yakin ingin menghapus ini?"
+        }
+    };
+
+    let currentLang = 'zh';
+    let db;
+
+    // --- 初始化数据库 ---
+    const request = indexedDB.open("MemoriesDB", 2);
+    request.onupgradeneeded = e => {
+        db = e.target.result;
+        if (!db.objectStoreNames.contains("posts")) {
+            db.createObjectStore("posts", { keyPath: "id", autoIncrement: true });
+        }
+    };
+    request.onsuccess = e => {
+        db = e.target.result;
+        initPage();
+    };
+
+    function initPage() {
+        // 自动检测语言
+        const browserLang = navigator.language.slice(0, 2);
+        changeLang(['zh', 'en', 'id'].includes(browserLang) ? browserLang : 'en');
+        
+        updateTimer();
+        displayMemories();
+    }
+
+    // --- 翻译逻辑 (MyMemory 辅助) ---
+    function changeLang(lang) {
+        currentLang = lang;
+        document.querySelectorAll('.lang-switcher button').forEach(b => b.classList.remove('active'));
+        document.getElementById(`btn-${lang}`).classList.add('active');
+
+        document.querySelectorAll('[data-i18n]').forEach(el => {
+            el.innerText = i18n[lang][el.getAttribute('data-i18n')];
+        });
+        document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+            el.placeholder = i18n[lang][el.getAttribute('data-i18n-placeholder')];
+        });
+    }
+
+    // --- 核心计时器 ---
+    function updateTimer() {
+        const start = new Date(START_DATE);
+        const now = new Date();
+        const diff = Math.floor((now - start) / (1000 * 60 * 60 * 24));
+        document.getElementById("days-number").innerText = diff > 0 ? diff : 0;
+    }
+
+    // --- 上传与展示 ---
+    function handleUpload() {
+        const text = document.getElementById('textInput').value;
+        const file = document.getElementById('imageInput').files[0];
+        
+        if (!text && !file) return;
+
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = e => saveToDB(text, e.target.result);
+            reader.readAsDataURL(file);
+        } else {
+            saveToDB(text, null);
+        }
+    }
+
+    function saveToDB(text, imageData) {
+        const transaction = db.transaction(["posts"], "readwrite");
+        const post = {
+            text,
+            image: imageData,
+            timestamp: new Date().toLocaleString(),
+            lang: currentLang
+        };
+        transaction.objectStore("posts").add(post);
+        transaction.oncomplete = () => {
+            document.getElementById('textInput').value = '';
+            document.getElementById('imageInput').value = '';
+            displayMemories();
+        };
+    }
+
+    function displayMemories() {
+        const wall = document.getElementById('memoryWall');
+        wall.innerHTML = '';
+        const store = db.transaction("posts").objectStore("posts");
+        store.openCursor(null, "prev").onsuccess = e => {
+            const cursor = e.target.result;
+            if (cursor) {
+                const data = cursor.value;
+                const card = document.createElement('div');
+                card.className = 'memory-card';
+                card.innerHTML = `
+                    <button class="delete-btn" onclick="deleteMsg(${data.id})">×</button>
+                    ${data.image ? `<img src="${data.image}" class="memory-image">` : ''}
+                    <div style="white-space: pre-wrap;">${escapeHTML(data.text)}</div>
+                    <span class="memory-time">📅 ${data.timestamp}</span>
+                `;
+                wall.appendChild(card);
+                cursor.continue();
+            }
+        };
+    }
+
+    function deleteMsg(id) {
+        if (confirm(i18n[currentLang].confirmDel)) {
+            const transaction = db.transaction(["posts"], "readwrite");
+            transaction.objectStore("posts").delete(id);
+            transaction.oncomplete = () => displayMemories();
+        }
+    }
+
+    function escapeHTML(str) {
+        const p = document.createElement('p');
+        p.textContent = str;
+        return p.innerHTML;
+    }
+</script>
+
+</body>
+</html>
