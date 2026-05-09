@@ -4,30 +4,29 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     
-    <title>我们的回忆 | Our Memories (Cloud)</title>
+    <title>我们的回忆 | Our Memories (Cloud Free)</title>
     <meta name="description" content="Ferizka & HAOYUAN 的专属超能纪念馆">
     <link href="https://fonts.googleapis.com/css2?family=ZCOOL+KuaiLe&family=Fredoka+One&display=swap" rel="stylesheet">
     
+    <!-- Firebase SDK -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getFirestore, collection, addDoc, query, orderBy, onSnapshot, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-        import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-storage.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyDUaVm1CuujLBzkjnlPRfzdZci_kjFBJMw",
             authDomain: "our-memories-44aca.firebaseapp.com",
             projectId: "our-memories-44aca",
-            storageBucket: "our-memories-44aca.firebasestorage.app",
+            storageBucket: "our-memories-44aca.appspot.com",
             messagingSenderId: "736843860812",
             appId: "1:736843860812:web:7fb3f12aed408ecede1de9"
         };
 
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
-        const storage = getStorage(app);
 
-        // 将 Firebase 方法挂载到全局，方便下方逻辑调用
-        window.fb = { db, collection, addDoc, query, orderBy, onSnapshot, deleteDoc, doc, storage, ref, uploadBytes, getDownloadURL };
+        // 挂载到全局
+        window.fb = { db, collection, addDoc, query, orderBy, onSnapshot, deleteDoc, doc };
     </script>
 
     <style>
@@ -46,7 +45,6 @@
             display: flex; flex-direction: column; align-items: center;
         }
 
-        /* 顶部导航 */
         .header-nav {
             width: 100%; background: var(--white); border-bottom: 5px solid var(--ppg-black);
             padding: 15px 0; display: flex; justify-content: space-around; align-items: center;
@@ -64,55 +62,56 @@
             transform: translateY(-2px); box-shadow: 0 4px 0 var(--ppg-black);
         }
 
-        /* 计时器 */
-        .hero-section { text-align: center; padding: 60px 20px; width: 100%; }
+        .hero-section { text-align: center; padding: 40px 20px; width: 100%; }
         .timer-card {
             background: var(--white); border: 6px solid var(--ppg-black);
-            display: inline-block; padding: 40px; border-radius: 30px;
-            box-shadow: 15px 15px 0px var(--bubbles-blue); position: relative;
+            display: inline-block; padding: 30px; border-radius: 30px;
+            box-shadow: 12px 12px 0px var(--bubbles-blue);
         }
-        #days-number { font-size: 6rem; color: var(--blossom-pink); text-shadow: 5px 5px 0 var(--ppg-black); display: block; margin: 10px 0; }
+        #days-number { font-size: 5rem; color: var(--blossom-pink); text-shadow: 4px 4px 0 var(--ppg-black); display: block; }
 
-        .container { width: 90%; max-width: 800px; margin: 30px auto; }
+        .container { width: 90%; max-width: 800px; margin-bottom: 50px; }
 
-        /* 上传区 */
         .upload-area {
             background: var(--buttercup-green); border: 5px solid var(--ppg-black);
-            border-radius: 20px; padding: 25px; margin-bottom: 50px;
-            box-shadow: 10px 10px 0 var(--ppg-black);
+            border-radius: 20px; padding: 25px; margin-bottom: 40px;
+            box-shadow: 8px 8px 0 var(--ppg-black);
         }
         textarea {
-            width: 100%; height: 100px; border: 4px solid var(--ppg-black);
+            width: 100%; height: 90px; border: 4px solid var(--ppg-black);
             border-radius: 12px; padding: 15px; box-sizing: border-box;
-            font-family: inherit; font-size: 1.1rem; margin-bottom: 15px;
+            font-family: inherit; font-size: 1rem; margin-bottom: 15px;
         }
         .btn-send {
             background: var(--blossom-pink); color: white; border: 4px solid var(--ppg-black);
-            padding: 12px 35px; border-radius: 12px; cursor: pointer;
-            font-size: 1.3rem; font-family: inherit; box-shadow: 0 5px 0 var(--ppg-black);
+            padding: 10px 30px; border-radius: 12px; cursor: pointer;
+            font-size: 1.2rem; font-family: inherit; box-shadow: 0 4px 0 var(--ppg-black);
         }
+        .btn-send:active { transform: translateY(2px); box-shadow: 0 2px 0 var(--ppg-black); }
         .btn-send:disabled { background: #ccc; cursor: not-allowed; }
 
-        /* 照片墙 */
         .memory-grid { column-count: 2; column-gap: 20px; }
         @media (max-width: 600px) { .memory-grid { column-count: 1; } }
 
         .memory-card {
             break-inside: avoid; background: var(--white); border: 4px solid var(--ppg-black);
-            border-radius: 15px; padding: 15px; margin-bottom: 20px;
+            border-radius: 15px; padding: 15px; margin-bottom: 20px; position: relative;
         }
-        .memory-image { width: 100%; border-radius: 8px; border: 3px solid var(--ppg-black); margin-bottom: 12px; }
-        .memory-time { font-size: 0.85rem; color: #777; display: block; margin-top: 10px; border-top: 1px dashed #ccc; padding-top: 5px; }
-        .delete-btn { float: right; background: none; border: none; color: #ff4757; cursor: pointer; font-weight: bold; }
+        .memory-image { width: 100%; border-radius: 8px; border: 2px solid var(--ppg-black); margin-bottom: 10px; }
+        .memory-time { font-size: 0.8rem; color: #888; display: block; margin-top: 10px; text-align: right; }
+        .delete-btn {
+            position: absolute; top: -10px; right: -10px; background: #ff4757; color: white;
+            border: 3px solid var(--ppg-black); border-radius: 50%; width: 30px; height: 30px;
+            cursor: pointer; font-weight: bold;
+        }
 
-        /* 加载动画 */
-        #loading-txt { display: none; color: var(--ppg-black); font-weight: bold; margin-top: 10px; }
+        #loading-txt { display: none; text-align: center; font-weight: bold; margin-bottom: 10px; }
     </style>
 </head>
 <body>
 
 <div class="header-nav">
-    <div style="font-size: 1.5rem;">🌸 <span data-i18n="navTitle">我们的回忆</span></div>
+    <div style="font-size: 1.4rem;">🌸 <span data-i18n="navTitle">我们的回忆</span></div>
     <div class="lang-switcher">
         <button onclick="changeLang('zh')" id="btn-zh">中文</button>
         <button onclick="changeLang('en')" id="btn-en">EN</button>
@@ -122,7 +121,7 @@
 
 <div class="hero-section">
     <div class="timer-card">
-        <p data-i18n="timerPrefix" style="margin:0;">Ferizka Hairunnisa & HAOYUAN 已见面</p>
+        <p data-i18n="timerPrefix" style="margin:0;">Ferizka & HAOYUAN 已见面</p>
         <span id="days-number">0</span>
         <p data-i18n="timerSuffix" style="margin:0;">天了</p>
     </div>
@@ -130,34 +129,31 @@
 
 <div class="container">
     <div class="upload-area">
-        <h3 data-i18n="uploadTitle">🌸 添加新的超能回忆</h3>
         <textarea id="textInput" data-i18n-placeholder="placeholder"></textarea>
         <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
             <input type="file" id="imageInput" accept="image/*">
             <button class="btn-send" id="sendBtn" onclick="handleUpload()" data-i18n="btnSend">发射记忆！</button>
         </div>
-        <div id="loading-txt">🚀 正在同步到云端，请稍候...</div>
+        <div id="loading-txt">🚀 正在通过量子隧道发送...</div>
     </div>
 
-    <h2 style="text-align:center;">💎 <span data-i18n="wallTitle">回忆照片墙</span></h2>
     <div class="memory-grid" id="memoryWall"></div>
 </div>
 
 <script>
     const START_DATE = "2025-05-24";
     const i18n = {
-        zh: { navTitle: "我们的回忆", timerPrefix: "Ferizka & HAOYUAN 已见面", timerSuffix: "天了", uploadTitle: "添加新记忆", placeholder: "写下甜蜜瞬间...", btnSend: "发射！", wallTitle: "回忆墙", confirmDel: "确定删除吗？" },
-        en: { navTitle: "Our Memories", timerPrefix: "Met for", timerSuffix: "Days", uploadTitle: "New Memory", placeholder: "Write something...", btnSend: "Send!", wallTitle: "Memory Wall", confirmDel: "Delete this?" },
-        id: { navTitle: "Kenangan Kita", timerPrefix: "Telah bertemu", timerSuffix: "Hari", uploadTitle: "Tambah Kenangan", placeholder: "Tulis sesuatu...", btnSend: "Kirim!", wallTitle: "Dinding Kenangan", confirmDel: "Hapus ini?" }
+        zh: { navTitle: "我们的回忆", timerPrefix: "Ferizka & HAOYUAN 已见面", timerSuffix: "天了", placeholder: "想对 Ika 说什么？", btnSend: "发射！", confirmDel: "确定删除这条回忆吗？" },
+        en: { navTitle: "Our Memories", timerPrefix: "Met for", timerSuffix: "Days", placeholder: "Say something to Ika...", btnSend: "Send!", confirmDel: "Delete this memory?" },
+        id: { navTitle: "Kenangan Kita", timerPrefix: "Telah bertemu", timerSuffix: "Hari", placeholder: "Katakan sesuatu pada Ika...", btnSend: "Kirim!", confirmDel: "Hapus kenangan ini?" }
     };
 
     let currentLang = 'zh';
 
-    // 1. 初始化
     function initPage() {
-        changeLang(['zh', 'en', 'id'].includes(navigator.language.slice(0, 2)) ? navigator.language.slice(0, 2) : 'en');
+        changeLang('zh');
         updateTimer();
-        startCloudSync(); // 开启云端实时同步
+        startCloudSync();
     }
 
     function updateTimer() {
@@ -173,7 +169,7 @@
         document.querySelectorAll('[data-i18n-placeholder]').forEach(el => el.placeholder = i18n[lang][el.getAttribute('data-i18n-placeholder')]);
     }
 
-    // 2. 云端核心逻辑
+    // 核心：图片转 Base64 避开 Storage 付费与 CORS 限制
     async function handleUpload() {
         const text = document.getElementById('textInput').value;
         const file = document.getElementById('imageInput').files[0];
@@ -185,18 +181,25 @@
         loader.style.display = 'block';
 
         try {
-            let imageUrl = null;
-            // 如果有图片，先上云
+            let imageBase64 = null;
             if (file) {
-                const storageRef = window.fb.ref(window.fb.storage, 'memories/' + Date.now() + '_' + file.name);
-                await window.fb.uploadBytes(storageRef, file);
-                imageUrl = await window.fb.getDownloadURL(storageRef);
+                // 如果图片过大，Base64 会让传输变慢甚至失败
+                if (file.size > 2 * 1024 * 1024) {
+                    alert("图片太大了（超过2MB），请先压缩一下再发射哦！");
+                    throw new Error("File too large");
+                }
+                
+                imageBase64 = await new Promise((resolve) => {
+                    const reader = new FileReader();
+                    reader.onloadend = () => resolve(reader.result);
+                    reader.readAsDataURL(file);
+                });
             }
 
-            // 写入 Firestore 数据库
+            // 全部存入 Firestore 数据库
             await window.fb.addDoc(window.fb.collection(window.fb.db, "posts"), {
-                text,
-                image: imageUrl,
+                text: text || "",
+                image: imageBase64, 
                 timestamp: Date.now(),
                 displayTime: new Date().toLocaleString()
             });
@@ -205,7 +208,7 @@
             document.getElementById('imageInput').value = '';
         } catch (e) {
             console.error(e);
-            alert("云端连接失败，请检查 Firebase 规则设置！");
+            if(e.message !== "File too large") alert("连接云端失败，请检查 Firestore Rules 规则！");
         } finally {
             btn.disabled = false;
             loader.style.display = 'none';
@@ -218,7 +221,6 @@
                 clearInterval(checkFB);
                 const q = window.fb.query(window.fb.collection(window.fb.db, "posts"), window.fb.orderBy("timestamp", "desc"));
                 
-                // 实时监听云端变化，有人发消息，所有人都会秒出内容
                 window.fb.onSnapshot(q, (snapshot) => {
                     const wall = document.getElementById('memoryWall');
                     wall.innerHTML = '';
